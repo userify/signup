@@ -194,18 +194,33 @@ def string_test(s, is_email=False):
             return ""
     return s
 
-def ask_username_password():
+def ask_username_password(api):
+
+    print """A special note on Usernames..
+    Usernames are in a global namespace across the entire cloud.  They must be
+    unique in all of Userify to reduce security risk from overlapping or
+    renamed usernames. If you have a particular username on Github, it's likely
+    available here. You can even use your eamil address on most Linux
+    distributions, and, don't worry -- of course you can change your username
+    at any time. Usernames are only restricted on Userify Cloud, not Userify
+    self-hosted (Enterprise and Professional).
+    """
+
     username = password = ""
+    if USER not in "ec2-user root ubuntu centos":
+        uname = " [%s]" % USER
+    else:
+        uname = ""
+
     while not username:
-        if USER not in "ec2-user root ubuntu centos":
-            uname = " [%s]" % USER
-        else:
-            uname = ""
-        username = raw_input(
-            "\nPlease provide a username%s: " % uname)
+        unameprompt = (" (or press Enter to try %s)" % uname) if uname else ""
+        username = raw_input("\nPlease provide a username" + unameprompt + ": ")
         username = string_test(username)
         if not username:
             username = USER
+        if not check_username(api, username):
+            print "Username %s is already in use." % username
+            username = uname = ""
     while not password or len(password) < 8:
         password = getpass.getpass("Please provide a STRONG password: ").strip()
     return {"username": username, "password": password}
@@ -259,6 +274,12 @@ def create_company(api, data):
     company_id = response_data["company_id"]
     return company_id
 
+def check_username(api, username=""):
+    # https://dashboard.userify.com/api/userify/username/jamieson
+    print "Checking username %s .." % username
+    response, response_data = api.get("/username/%s" % username, handle_error=False)
+    return response_data and "status" in response_data and response_data["status"] == "success"
+
 def create_project(api, data, name="First Project"):
     print "Creating projects %s .." % name
     response, response_data = api.post(
@@ -300,12 +321,12 @@ if __name__ == "__main__":
 
     print "Welcome to Userify!"
 
-    # first, signup user account.
-    data = ask_username_password()
-    auth = None
-
     # create API object
     api = API()
+
+    # first, signup user account.
+    data = ask_username_password(api)
+    auth = None
 
     print "Creating your user account.."
     response, rdata = api.post("/profile", data, handle_error=False)
