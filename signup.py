@@ -221,6 +221,21 @@ def ask_username_password(api):
         if not check_username(api, username):
             print "Username %s is already in use." % username
             username = uname = ""
+
+    print """    Your password is secure. It does not stay on this computer, but
+    is immediately sent via TLS pigeons to our server, where it is hashed with
+    bcrypt and then the bcrypted password is encrypted in your profile with
+    libsodium/NaCl. 
+    
+    Your profile is then housed on UV-sensitive paper in a thousand-year-old
+    monastery on top of the world, guarded by the world's most fearsome giraffes.
+    
+    (Ok, that last part was completely made up, of course -- who ever saw a
+    fearsome giraffe? -- but the bits about TLS, bcrypt, and libsodium were all
+    true! If this isn't enough for you (sans fearsome giraffes), please take a
+    look at our Enterprise or Professional product, which is free for up to 10
+    servers. Email us at enterprise@userify.com for details.)"""
+
     while not password or len(password) < 8:
         password = getpass.getpass("Please provide a STRONG password: ").strip()
     return {"username": username, "password": password}
