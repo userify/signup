@@ -1,0 +1,61 @@
+#! /bin/sh
+
+# curl -# https://usrfy.io/signup | sudo -sE
+
+clear
+export sudo=$(which sudo)
+
+if [ ! $(which python) ]; then
+    if [ $(which apt) ]; then
+        echo "Installing Python with apt-get"
+        $sudo apt-get update >/dev/null
+        $sudo apt-get -qqy install python >/dev/null
+        $sudo apt-get -qqy install python-minimal >/dev/null
+    elif [ $(which yum) ]; then
+        echo "Installing Python with yum."
+        $sudo yum install -y python >/dev/null
+    elif [ $(which dnf) ]; then
+        echo "Installing Python with dnf"
+        $sudo dnf install -y python
+    else
+        set -e
+        echo "Unable to install Python (2.6, 2.7). Please contact Userify support for assistance."
+        exit 1
+    fi
+fi
+
+export RED_TEXT="[31m"
+export BLUE_TEXT="[34m"
+export GREEN_TEXT="[32m"
+export PURPLE_TEXT="[35m"
+export CYAN_TEXT="[36m"
+export RESET_TEXT="[0m"
+
+cat << EOF
+   
+             ${BLUE_TEXT}            _--_
+             ${BLUE_TEXT}           (    \\
+             ${BLUE_TEXT}        --/      )
+             ${BLUE_TEXT}   .-- /   \\      \\
+             ${BLUE_TEXT} ./   \\            )${PURPLE_TEXT} _  __
+             ${BLUE_TEXT}/${GREEN_TEXT}_   _ ___  ___ _ __${PURPLE_TEXT}(_)/ _|_   _
+             ${GREEN_TEXT}| | | / __|/ _ \ '__${PURPLE_TEXT}| | |_  | | |
+             ${GREEN_TEXT}| |_| \__ \  __/ |  ${PURPLE_TEXT}| |  _| |_| |
+             ${GREEN_TEXT} \__,_|___/\___|_|  ${PURPLE_TEXT}|_|_|  \__, |
+             ${GREEN_TEXT}                    ${PURPLE_TEXT}       |___/  ${GREEN_TEXT}tm
+${RESET_TEXT}
+
+[37;42m                Welcome to Userify                     ${RESET_TEXT}
+-------------------------------------------------------------
+${PURPLE_TEXT}Just a few questions to get things started..
+${CYAN_TEXT}Learn more at https://userify.com/docs/
+${CYAN_TEXT}Email support@userify.com with questions.
+[0m
+EOF
+
+# redirected to a file and then executed
+# or else stdin gets grabbed
+fn=$(mktemp --suffix=".py")
+curl -# https://usrfy.io/signup.py > $fn
+chmod +x $fn
+$sudo $fn
