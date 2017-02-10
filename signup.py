@@ -179,7 +179,7 @@ def string_test(s, is_email=False):
     safe = (string.ascii_letters +
             string.digits + "_")
     if is_email:
-        safe += "@.,+"
+        safe += "@.,+-"
     s = s.strip().lower()
     if not s:
         return ""
