@@ -213,7 +213,7 @@ def ask_username_password(api):
     available here. You can even use your email address on most Linux
     distributions, and, don't worry -- of course you can change your username
     at any time. Usernames are only restricted on Userify Cloud, not Userify
-    self-hosted (Enterprise and Professional).
+    self-hosted (Enterprise and Express).
     """
 
     username = password = ""
@@ -244,7 +244,7 @@ def ask_username_password(api):
     (Ok, that last part was completely made up, of course -- who ever saw a
     fearsome giraffe? -- but the bits about TLS, bcrypt, and libsodium were all
     true! If this isn't enough for you (sans fearsome giraffes), please take a
-    look at our Enterprise or Professional product, which is free for up to 10
+    look at our Enterprise or Express product, which is free for up to 5
     servers. Email us at enterprise@userify.com for details.)
     """
 
