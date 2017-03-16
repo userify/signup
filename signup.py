@@ -17,6 +17,7 @@ import socket
 from pprint import pprint, pformat
 import ssl
 import tempfile
+import time
 
 # recapture sdtin, since it's closed since we're
 # coming in from a piped process..
@@ -52,6 +53,7 @@ for HOMEDIR in ["/home/%s" % USER, "/home/ec2-user", "/home/ubuntu", "/home/cent
 
 
 def die(code, text):
+    print("")
     print ("Sorry! Something went wrong with this script!")
     print ("Please email support@userify.com "
           +"and we'll fix it asap!\n")
@@ -138,13 +140,21 @@ class API:
 
     def request(self, method, path, data=""):
         path = self.prefix.rstrip("/") + "/" + path.lstrip("/")
+        self.log(path)
         reqobj = self.https(method, path, data)
         # reqobj.sock.settimeout(15)
         self.response = reqobj.getresponse()
+        self.log(self.response.status)
+        self.log(self.response.msg)
+        self.log(self.response.reason)
         return self.response.read()
 
     def _handle_request(self, method, path, data, handle_error=True):
+        self.log(method)
+        self.log(path)
+        self.log(data)
         response_data = self.request(method, path, data)
+        self.log(response_data)
         if handle_error:
             self._handle_error(response_data, handle_error)
         data = json.loads(response_data) if response_data else {}
@@ -200,7 +210,7 @@ def ask_username_password(api):
     Usernames are in a global namespace across the entire cloud.  They must be
     unique in all of Userify to reduce security risk from overlapping or
     renamed usernames. If you have a particular username on Github, it's likely
-    available here. You can even use your eamil address on most Linux
+    available here. You can even use your email address on most Linux
     distributions, and, don't worry -- of course you can change your username
     at any time. Usernames are only restricted on Userify Cloud, not Userify
     self-hosted (Enterprise and Professional).
@@ -387,7 +397,18 @@ if __name__ == "__main__":
     company_id = create_company(api, data)
 
     # create project
-    project_id = create_project(api, data, data["project_name"])
+    try:
+        project_id = create_project(api, data, data["project_name"])
+    except Exception, e:
+        print ("\n".join(api.debug_log))
+        print data
+        print data["project_name"]
+        print "Oh no! Unable to create project: %s" % e
+        print "This script is still in beta.. please sign in at https://userify.com"
+        print "with your username and password."
+        print "Please provide this debug log (above) to support@userify.com:"
+        print "Sorry about that and thank you!"
+        raise
 
     # create server group
     servergroup_id = create_servergroup(api, data, project_id, data["servergroup_name"])
@@ -406,6 +427,7 @@ if __name__ == "__main__":
         qexec(["sudo", fn])
         os.unlink(fn)
 
+    time.sleep(3)
     print "Please visit https://dashboard.userify.com "
     print "and log in with the above username (%s) " % data["username"]
     print "and password."
