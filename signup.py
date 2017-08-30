@@ -356,20 +356,20 @@ if __name__ == "__main__":
     auth = None
 
     print "Creating your user account.."
-    response, rdata = api.post("/profile", data, handle_error=False)
+    response, response_data = api.post("/profile", data, handle_error=False)
 
     already_in_use = False
     move_on = False
 
     if response.status != 200:
-        if rdata and "error" in rdata:
-            error = rdata["error"]
+        if response_data and "error" in response_data:
+            error = response_data["error"]
             if response.status == 400 and error == "Username already in use.":
                 already_in_use = True
                 move_on = True
             if response.status == 400 and error == "Please provide an email address.":
                 questions_signup(data, ssh_only=False)
-                response, rdata = api.post("/profile", data)
+                response, response_data = api.post("/profile", data)
                 move_on = True
 
     if not move_on:
