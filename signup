@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# curl -# https://usrfy.io/signup | sudo -sE
+# curl -# https://deploy.userify.com/signup | sudo -sE
 
 clear
 export sudo=$(which sudo)
@@ -56,6 +56,6 @@ EOF
 # redirected to a file and then executed
 # or else stdin gets grabbed
 fn=$(mktemp --suffix=".py")
-curl -# https://usrfy.io/signup.py > $fn
+curl -# https://deploy.userify.com/signup.py > $fn
 chmod +x $fn
 $sudo $fn

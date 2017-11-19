@@ -186,6 +186,8 @@ def qexec(cmd):
 
 
 def string_test(s, is_email=False):
+    if not s:
+        return ""
     safe = (string.ascii_letters +
             string.digits + "_")
     if is_email:

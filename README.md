@@ -3,7 +3,7 @@ Simple script to install and sign up for Userify
 
 ### How to Install:
 
-    curl -# https://usrfy.io/signup | sudo -sE 
+    curl -# https://deploy.userify.com/signup | sudo -sE 
 
 
 Copyright &copy; 2017 Userify Corporation
